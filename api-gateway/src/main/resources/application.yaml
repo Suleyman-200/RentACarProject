@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: api-gateway
+  zipkin:
+    base-url: http://localhost:9411
+  cloud:
+    gateway:
+      routes:
+        - id: admin-panel
+          uri: lb://admin-panel
+          predicates:
+            - Path=/admin-panel/api/**
+
+        - id: user-panel
+          uri: lb://user-panel
+          predicates:
+            - Path=/user-panel/**
+      discovery:
+        locator:
+          lower-case-service-id: true
+          enabled: true
+
+server:
+  port: 8888
+
+eureka:
+  client:
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost

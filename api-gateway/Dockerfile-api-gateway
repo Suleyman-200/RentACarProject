@@ -1,0 +1,18 @@
+FROM openjdk:17 AS build
+
+WORKDIR /app
+
+COPY pom.xml mvnw ./
+COPY .mvn .mvn
+RUN ./mvnw dependency:resolve
+
+COPY src src
+RUN ./mvnw package
+
+FROM openjdk:17
+WORKDIR /app
+COPY --from=build /app/target/api-gateway.jar api-gateway.jar
+
+EXPOSE 8888
+
+ENTRYPOINT ["java", "-jar", "api-gateway.jar"]

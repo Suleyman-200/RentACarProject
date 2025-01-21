@@ -1,0 +1,64 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:latest
+    container_name: rentacar-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: rentACarCamp
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    networks:
+      - rentacar-network
+
+
+  admin-panel:
+    build:
+      context: ./ADMIN-PANEL
+      dockerfile: Dockerfile-admin-panel
+    container_name: admin-panel
+    ports:
+      - "4001:4000"
+    networks:
+      - rentacar-network
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://ms-discovery:8761/eureka/
+
+  user-panel:
+    build:
+      context: ./USER-PANEL
+      dockerfile: Dockerfile-user-panel
+    container_name: user-panel
+    ports:
+      - "4002:4000"
+    networks:
+      - rentacar-network
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://ms-discovery:8761/eureka/
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile-api-gateway
+    container_name: api-gateway
+    ports:
+      - "8888:8888"
+    networks:
+      - rentacar-network
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://ms-discovery:8761/eureka/
+
+  euraka-server:
+    build:
+      context: ./ms-discovery
+      dockerfile: Dockerfile-ms-discovery
+    container_name: euraka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - rentacar-network
+
+
+networks:
+  rentacar-network:
+    driver: bridge
